@@ -1,0 +1,35 @@
+/**:
+  ros__parameters:
+    # This is an example of CLIP algorithm parameters
+    # python openclip_service_ros2/openclip_service_node.py --ros-args  --params-file ../config/config_ros_2.yaml
+    config:
+      reduced_image_height: 720
+
+      # OpenCLIP model names and pretrained checkpoints names (or filenames)
+      # The files must be downloaded in working directory
+      models:
+        ViT-B-32:
+          pretrained: ../openclip-service/openclip_service/laion2b_s34b_b79k.bin
+        ViT-B-16:
+          pretrained: ../openclip-service/openclip_service/laion2b_s34b_b88k.bin
+
+      init_texts: # List of initial texts to evaluate
+        ViT-B-32:
+          - car
+          - bus
+          - truck
+          - bicycle
+          - motorcycle
+          - person
+        ViT-B-16:
+          - car
+          - text
+          - light
+          - red
+
+      test_request: # Testing list of texts to evaluate
+        model_name: ViT-B-32
+        texts:
+          - light
+          - car
+          - road

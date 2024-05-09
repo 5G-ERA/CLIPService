@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "openclip-client"
+version = "0.1.0"
+description = "CLIP Service Network Application - client part"
+authors = ["Petr Kleparnik <p.kleparnik@cognitechna.cz>", "Roman Juranek <r.juranek@cognitechna.cz>"]
+readme = "README.md"
+repository = "https://github.com/5G-ERA/CLIPService"
+packages = [{include = "openclip_client"}, {include = "openclip_client_python", from = "examples"}]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+pyyaml = ">=6.0.1"
+opencv-python = ">=4.8"
+imutils = ">=0.5.4"
+era-5g-client = "^0.11.0"
+era-5g-interface = "^0.10.0"
+
+[tool.poetry.scripts]
+openclip_client_python = "openclip_client_python.client_python:main"
+#openclip_client_python_middleware = "openclip_client_python.client_python_middleware:main"
+#openclip_client_python_simple = "openclip_client_python.client_python_simple:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120

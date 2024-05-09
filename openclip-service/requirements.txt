@@ -1,0 +1,6 @@
+era_5g_interface
+era_5g_server
+open-clip-torch
+opencv-python
+pillow
+torch
