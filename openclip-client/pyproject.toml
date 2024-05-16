@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openclip-client"
-version = "0.1.0"
+version = "0.1.1"
 description = "CLIP Service Network Application - client part"
 authors = ["Petr Kleparnik <p.kleparnik@cognitechna.cz>", "Roman Juranek <r.juranek@cognitechna.cz>"]
 readme = "README.md"
@@ -17,8 +17,7 @@ era-5g-interface = "^0.10.0"
 
 [tool.poetry.scripts]
 openclip_client_python = "openclip_client_python.client_python:main"
-#openclip_client_python_middleware = "openclip_client_python.client_python_middleware:main"
-#openclip_client_python_simple = "openclip_client_python.client_python_simple:main"
+openclip_client_python_middleware = "openclip_client_python.client_python_middleware:main"
 
 [build-system]
 requires = ["poetry-core"]

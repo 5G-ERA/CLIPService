@@ -42,7 +42,9 @@ MIDDLEWARE_USER = str(os.getenv("MIDDLEWARE_USER", "00000000-0000-0000-0000-0000
 # Middleware password.
 MIDDLEWARE_PASSWORD = str(os.getenv("MIDDLEWARE_PASSWORD", "password"))
 # Middleware Network Application ID (task ID).
-MIDDLEWARE_TASK_ID = str(os.getenv("MIDDLEWARE_TASK_ID", "00000000-0000-0000-0000-000000000000"))
+MIDDLEWARE_TASK_ID = str(
+    os.getenv("CLIP_MIDDLEWARE_TASK_ID", str(os.getenv("MIDDLEWARE_TASK_ID", "00000000-0000-0000-0000-000000000000")))
+)
 # Middleware robot ID (robot ID).
 MIDDLEWARE_ROBOT_ID = str(os.getenv("MIDDLEWARE_ROBOT_ID", "00000000-0000-0000-0000-000000000000"))
 
@@ -72,9 +74,6 @@ def main() -> None:
         "-s", "--stream_type", type=int, help="StreamType: 1 = JPEG, 2 = H.264, 3 = HEVC", default=StreamType.H264
     )
     parser.add_argument("-c", "--config", type=Path, help="Collision warning config", default=CONFIG_FILE)
-    parser.add_argument(
-        "-p", "--out_prefix", type=str, help="Prefix of output csv file with measurements", default=None
-    )
     parser.add_argument("-t", "--play_time", type=int, help="Video play time in seconds", default=5000)
     parser.add_argument("source_video", type=str, help="Video stream (file or url)", nargs="?", default=TEST_VIDEO_FILE)
     parser.add_argument("-m", "--measuring", type=bool, help="Enable extended measuring logs", default=True)

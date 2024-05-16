@@ -133,3 +133,4 @@ yolov*.pt
 # /videos
 
 .vscode
+/data/*.bin

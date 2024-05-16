@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openclip-service"
-version = "0.1.0"
+version = "0.1.1"
 description = "CLIP Service Network Application - service part"
 authors = ["Petr Kleparnik <p.kleparnik@cognitechna.cz>", "Roman Juranek <r.juranek@cognitechna.cz>"]
 readme = "README.md"
@@ -21,6 +21,7 @@ torchaudio = ">=2.1.0"
 
 [tool.poetry.scripts]
 openclip_service = "openclip_service.service:main"
+clip_worker = "openclip_service.clip_worker:main"
 
 [build-system]
 requires = ["poetry-core"]

@@ -17,6 +17,7 @@ from PIL import Image
 from torch import Tensor
 
 from era_5g_interface.interface_helpers import LatencyMeasurements
+from era_5g_interface.measuring import Measuring
 
 logger = logging.getLogger(__name__)
 
@@ -202,31 +203,69 @@ class CLIPWorker(Thread):
         logger.info(f"{self.name} thread is stopping.")
 
 
+measuring_items = {
+    "key_timestamp": 0,
+    "final_timestamp": 0,
+    "worker_recv_timestamp": 0,
+    "worker_before_process_timestamp": 0,
+    "worker_after_process_timestamp": 0,
+    "worker_send_timestamp": 0,
+}
+prefix = f"client-final"
+measuring = Measuring(measuring_items, enabled=True, filename_prefix=prefix)
+
 def visualization(results: [Dict[str, Any]]) -> None:
     """Testing send function - visualization."""
+
+    results_timestamp = time.perf_counter_ns()
+
+    if "timestamp" in results:
+        key_timestamp = results.get("timestamp")
+        recv_timestamp = results.get("recv_timestamp", key_timestamp)
+        send_timestamp = results.get("send_timestamp", 0)
+        timestamp_before_process = results.get("timestamp_before_process", 0)
+        timestamp_after_process = results.get("timestamp_after_process", 0)
+
+    measuring.log_measuring(key_timestamp, "final_timestamp", results_timestamp)
+
+    # Log other misc timestamps from the received message
+    measuring.log_measuring(key_timestamp, "worker_recv_timestamp", recv_timestamp)
+    measuring.log_measuring(
+        key_timestamp,
+        "worker_before_process_timestamp",
+        timestamp_before_process,
+    )
+    measuring.log_measuring(
+        key_timestamp,
+        "worker_after_process_timestamp",
+        timestamp_after_process,
+    )
+    measuring.log_measuring(key_timestamp, "worker_send_timestamp", send_timestamp)
+
+    measuring.store_measuring(key_timestamp)
 
     logger.info(f"{results['texts']}: {results['probs']}")
     logger.info(
         f"delay: "
         f"{(results.get('timestamp_after_process', 0) - results.get('timestamp_before_process', 0)) * 1.0e-9:.3f}s"
     )
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(
-        results["frame"],
-        f"{results['texts']}: {results['probs']}",
-        (20, 20),
-        font,
-        0.5,
-        (0, 255, 0),
-        1,
-        cv2.LINE_AA,
-    )
-
-    try:
-        cv2.imshow("Results", results["frame"])
-        cv2.waitKey(1)
-    except Exception as ex:
-        logger.error(repr(ex))
+    # font = cv2.FONT_HERSHEY_SIMPLEX
+    # cv2.putText(
+    #     results["frame"],
+    #     f"{results['texts']}: {results['probs']}",
+    #     (20, 20),
+    #     font,
+    #     0.5,
+    #     (0, 255, 0),
+    #     1,
+    #     cv2.LINE_AA,
+    # )
+    #
+    # try:
+    #     cv2.imshow("Results", results["frame"])
+    #     cv2.waitKey(1)
+    # except Exception as ex:
+    #     logger.error(repr(ex))
 
 
 def main() -> None:
@@ -258,12 +297,14 @@ def main() -> None:
         ["the sun shines from the right side", "the sun shines from the left side"],
         ["stone road", "asphalt road", "concrete road", "dirt road"],
         ["I drive in the city", "I drive in the forest", "I drive outside the city"],
-        ["there is a traffic light in front of me",
-         "there is no traffic light in front of me",
-         "there is a traffic sign in front of me",
-         "no sign or traffic light"],
+        [
+            "there is a traffic light in front of me",
+            "there is no traffic light in front of me",
+            "there is a traffic sign in front of me",
+            "no sign or traffic light",
+        ],
         ["the traffic light is red", "the traffic light is green", "the traffic light is orange"],
-        ["it's cloudy, it's clear, it's raining"]
+        ["it's cloudy", "it's clear", "it's raining"],
     ]
 
     while True:
@@ -271,7 +312,7 @@ def main() -> None:
         if not ret:
             break
 
-        metadata = {
+        metadata = {"timestamp": time.perf_counter_ns(),
             "metadata": {"model_name": "ViT-B-32", "texts": random.choice(texts)}}
         #metadata = {"metadata": {"model_name": "ViT-B-32", "texts": ["car", "road"]}}
         clip_worker._process_image(metadata, frame)
